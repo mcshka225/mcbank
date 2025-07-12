@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель | MCBank</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'minecraft', sans-serif;
+        }
+        body {
+            background: #303030;
+            color: #fff;
+            padding: 20px;
+        }
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #202020;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: #333;
+            color: #fff;
+        }
+        .search-box button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .players-list {
+            background: #333;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .player-item {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .player-item:last-child {
+            border-bottom: none;
+        }
+        .player-item:hover {
+            background: #3a3a3a;
+        }
+        .player-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .player-actions button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .edit-btn {
+            transition: all 300ms ease;
+            background: #2196F3;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #79c3ff;
+            transform: scale(1.1);
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #202020;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 90%;
+        }
+        .modal h2 {
+            margin-bottom: 15px;
+            color: #4CAF50;
+        }
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #333;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .modal-buttons button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .save-btn {
+            background: #4CAF50;
+            color: white;
+        }
+        .cancel-btn {
+            background: #f44336;
+            color: white;
+        }
+        .error-message {
+            color: #f44336;
+            margin-top: 10px;
+            display: none;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logout-btn {
+            padding: 8px 15px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Админ-панель MCBank</h1>
+            <button class="logout-btn" id="logout-btn">Выйти</button>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Поиск игроков...">
+            <button id="search-btn">Найти</button>
+        </div>
+        
+        <div class="players-list" id="players-list">
+            <!-- Список игроков будет загружен здесь -->
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+    </div>
+    
+    <!-- Модальное окно для редактирования поинтов -->
+    <div class="modal" id="edit-modal">
+        <div class="modal-content">
+            <h2>Изменение баланса</h2>
+            <p>Игрок: <span id="modal-player-name"></span></p>
+            <p>Текущий баланс: <span id="modal-current-balance"></span></p>
+            <input type="number" id="points-input" placeholder="Введите количество поинтов">
+            <div class="modal-buttons">
+                <button class="cancel-btn" id="cancel-btn">Отмена</button>
+                <button class="save-btn" id="save-btn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = localStorage.getItem('currentUser');
+            const currentUser = userData ? JSON.parse(userData) : null;
+    
+            if (!currentUser || currentUser.username !== 'admin') {
+                alert('Доступ запрещен!');
+                window.location.href = '/index.html';
+            }
+            
+            // Элементы интерфейса
+            const playersList = document.getElementById('players-list');
+            const searchInput = document.getElementById('search-input');
+            const searchBtn = document.getElementById('search-btn');
+            const editModal = document.getElementById('edit-modal');
+            const modalPlayerName = document.getElementById('modal-player-name');
+            const modalCurrentBalance = document.getElementById('modal-current-balance');
+            const pointsInput = document.getElementById('points-input');
+            const saveBtn = document.getElementById('save-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const errorMessage = document.getElementById('error-message');
+            
+            let allPlayers = [];
+            let currentEditingPlayer = null;
+            
+            // Загрузка всех игроков
+            function loadPlayers() {
+                allPlayers = [];
+                
+                // Получаем всех пользователей из localStorage
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    
+                    // Пропускаем системные ключи
+                    if (key === 'currentUser') continue;
+                    
+                    try {
+                        const user = JSON.parse(localStorage.getItem(key));
+                        if (user && user.username) {
+                            // Добавляем баланс, если его нет
+                            if (typeof user.balance === 'undefined') {
+                                user.balance = 0;
+                                localStorage.setItem(key, JSON.stringify(user));
+                            }
+                            allPlayers.push(user);
+                        }
+                    } catch (e) {
+                        console.error('Ошибка при парсинге пользователя', key, e);
+                    }
+                }
+                
+                renderPlayers(allPlayers);
+            }
+            
+            // Отображение списка игроков
+            function renderPlayers(players) {
+                playersList.innerHTML = '';
+                
+                if (players.length === 0) {
+                    playersList.innerHTML = '<p>Игроки не найдены</p>';
+                    return;
+                }
+                
+                players.forEach(player => {
+                    const playerItem = document.createElement('div');
+                    playerItem.className = 'player-item';
+                    playerItem.innerHTML = `
+                        <span>${player.username}</span>
+                        <div>
+                            <span>Баланс: ${player.balance || 0}</span>
+                            <div class="player-actions">
+                                <button class="edit-btn" data-username="${player.username}">Изменить</button>
+                            </div>
+                        </div>
+                    `;
+                    playersList.appendChild(playerItem);
+                });
+                
+                // Добавляем обработчики для кнопок редактирования
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const username = this.getAttribute('data-username');
+                        openEditModal(username);
+                    });
+                });
+            }
+            
+            // Поиск игроков
+            function searchPlayers() {
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                if (!searchTerm) {
+                    renderPlayers(allPlayers);
+                    return;
+                }
+                
+                const filteredPlayers = allPlayers.filter(player => 
+                    player.username.toLowerCase().includes(searchTerm)
+                );
+                
+                renderPlayers(filteredPlayers);
+            }
+            
+            // Открытие модального окна редактирования
+            function openEditModal(username) {
+                const player = allPlayers.find(p => p.username === username);
+                
+                if (!player) {
+                    showError('Игрок не найден');
+                    return;
+                }
+                
+                currentEditingPlayer = player;
+                modalPlayerName.textContent = player.username;
+                modalCurrentBalance.textContent = player.balance || 0;
+                pointsInput.value = '';
+                editModal.style.display = 'flex';
+            }
+            
+            // Закрытие модального окна
+            function closeEditModal() {
+                editModal.style.display = 'none';
+                currentEditingPlayer = null;
+            }
+            
+            // Сохранение изменений
+            function saveChanges() {
+                const points = parseInt(pointsInput.value);
+                
+                if (isNaN(points)) {
+                    showError('Введите корректное число');
+                    return;
+                }
+                
+                // Обновляем баланс игрока
+                currentEditingPlayer.balance = (currentEditingPlayer.balance || 0) + points;
+                localStorage.setItem(currentEditingPlayer.username, JSON.stringify(currentEditingPlayer));
+                
+                // Обновляем список игроков
+                loadPlayers();
+                closeEditModal();
+            }
+            
+            // Показать сообщение об ошибке
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            }
+            
+            // Выход из системы
+            function logout() {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'auth.html';
+            }
+            
+            // Обработчики событий
+            searchBtn.addEventListener('click', searchPlayers);
+            searchInput.addEventListener('input', searchPlayers);
+            saveBtn.addEventListener('click', saveChanges);
+            cancelBtn.addEventListener('click', closeEditModal);
+            logoutBtn.addEventListener('click', logout);
+            
+            // Закрытие модального окна при клике вне его
+            editModal.addEventListener('click', function(e) {
+                if (e.target === editModal) {
+                    closeEditModal();
+                }
+            });
+            
+            // Загружаем игроков при старте
+            loadPlayers();
+        });
+    </script>
+</body>
+</html>
