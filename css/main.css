@@ -1,0 +1,260 @@
+@font-face {  
+    font-family: 'minecraft';  
+    src: url('fonts/minecraft.woff') format('woff2'), url('fonts/minecraft.woff') format('woff');  
+    font-weight: normal;  
+    font-style: normal;  
+}  
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {  
+    background: #303030;
+    font-family: 'minecraft', sans-serif;  
+    font-weight: 400;
+    color: #fff;
+} 
+
+a {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+}
+
+.wrapper {
+    background: #303030;
+    width: 100%;
+}
+
+.container {
+    width: 700px;
+    padding: 20px 0;
+    margin: 0 auto;
+}
+
+.hero {
+    padding-bottom: 100px;
+    position: relative;
+}
+
+.hero--info {
+    width: 530px;
+    padding-top: 70px;
+    transform: translate(20%, 100%);
+    font-size: 200%;
+}
+
+.hero--info a {
+    color: #fff;
+}
+
+.hero--info .btn {
+    background: #202020;
+    color: #ffffff;
+    border-radius: 100px;
+    padding: 20px 200px;
+    font-size: 100%;
+    border: 0;
+    transition: all 300ms ease;
+    position: relative;
+    top: 100px;
+    left: -20px;
+}
+
+.hero--info .btn:hover {
+    cursor: pointer;
+    background: #3a3a3a;
+    transform: scale(1.1);
+}
+
+.imgname .ptext {
+    color: #bebebe;
+    font-size: 230%;
+    position: absolute;
+    top: 58px;
+    left: -40px;
+    z-index: 2;
+}
+
+.imgname .name {
+    position: absolute;
+    top: 50px;
+    left: -60px;
+    width: 30%;
+    z-index: 1;
+}
+
+.hero--info .btn1 {
+    background: #202020;
+    color: #ffffff;
+    border-radius: 100px;
+    padding: 15px 30px;
+    font-size: 100%;
+    border: 0;
+    transition: all 300ms ease;
+    position: relative;
+    top: 150px;
+    left: 150px;
+}
+
+.hero--info .btn1:hover {
+    cursor: pointer;
+    background: #3a3a3a;
+    transform: scale(1.1);
+}
+
+.hero--info .btnadm {
+    background: #202020;
+    color: #ffffff;
+    border-radius: 100px;
+    padding: 15px 30px;
+    font-size: 100%;
+    border: 0;
+    transition: all 300ms ease;
+    position: relative;
+    top: 350px;
+    left: -650px;
+}
+
+.hero--info .btnadm:hover {
+    cursor: pointer;
+    background: #3a3a3a;
+    transform: scale(1.1);
+}
+
+/* pay */
+
+.hero-pay .info {
+    width: 500px;
+    padding: 50px 0;
+}
+
+.imgname .ptext {
+    color: #bebebe;
+    font-size: 230%;
+    position: absolute;
+    top: 130px;
+    left: 600px;
+    z-index: 2;
+}
+
+.imgname .name {
+    position: absolute;
+    top: 120px;
+    left: 580px;
+    width: 30%;
+    z-index: 1;
+}
+
+.hero-pay .info .btn {
+    background: #202020;
+    color: #ffffff;
+    border-radius: 100px;
+    padding: 15px 30px;
+    font-size: 300%;
+    border: 0;
+    transition: all 300ms ease;
+    position: relative;
+    top: 650px;
+    left: 200px;
+    z-index: 3;
+}
+
+.hero-pay .info .btn:hover {
+    cursor: pointer;
+    background: #3a3a3a;
+    transform: scale(1.1);
+}
+
+.hero-pay .info .btn2 {
+    background: #111111;
+    color: #ffffff;
+    border-radius: 100px;
+    padding: 15px 30px;
+    font-size: 300%;
+    border: 0;
+    transition: all 300ms ease;
+    position: relative;
+    top: 230px;
+    left: 510px;
+    z-index: 3;
+}
+
+.hero-pay .info .btn2:hover {
+    cursor: pointer;
+    background: #3a3a3a;
+    transform: scale(1.1);
+}
+
+.hero-pay h1 {
+    position: absolute;
+    top: 137px;
+    left: -165px;
+    z-index: 2;
+    font-size: 230%;
+}
+
+.hero-pay img {
+    width: 230px;
+    max-width: 100%;
+    position: absolute;
+    left: -200px;
+    top: 100px;
+    z-index: 1;
+}
+
+.hero-img img {
+    max-width: 1000%;
+    width: 1000px;
+    position: absolute;
+    left: -150px;
+    top: 400px;
+    z-index: 1;
+}
+
+.hero-pay {
+    position: relative;
+}
+.hero-pay a {
+    color: #fff;
+}
+
+.name input {
+    background: #111111;
+    position: absolute;
+    top: 465px;
+    left: -100px;
+    z-index: 2;
+    padding: 30px 30px;
+    width: 30%;
+    outline: none;
+    border: 0;
+    border-radius: 30px;
+    color: #fff;
+}
+
+.name input::placeholder {
+    color: #464646;
+}
+
+.count input {
+    background: #111111;
+    position: absolute;
+    top: 465px;
+    left: 200px;
+    z-index: 2;
+    padding: 30px 30px;
+    width: 30%;
+    outline: none;
+    border: 0;
+    border-radius: 30px;
+    color: #fff;
+}
+
+.count input::placeholder {
+    color: #464646;
+}
